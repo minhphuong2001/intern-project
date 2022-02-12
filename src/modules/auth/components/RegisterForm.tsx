@@ -28,41 +28,6 @@ const RegisterForm = (props: Props) => {
 
     const [validate, setValidate] = React.useState<IRegisterValidation>();
 
-    const renderRegion = () => {
-        const arrRegion = [
-            <option disabled selected value={''} key={''}>
-                {''}
-                {'--Chọn quốc gia--'}
-            </option>
-        ];
-
-        locations.map((location: ILocationParams, index: number) => (
-            arrRegion.push(
-                <option key={index} value={location.id}>{location.name}</option>
-            )
-        ));
-
-        return arrRegion;
-    }
-
-    const renderState = () => {
-        
-        const arrState = [
-            <option disabled selected value={''} key={''}>
-                {''}
-                {'--Chọn tỉnh/thành phố--'}
-            </option>
-        ]
-
-        cities.map((city: ILocationParams, index: number) => (
-            arrState.push(
-                <option key={index} value={city.id}>{city.name}</option>
-            )
-        ));
-
-        return arrState;
-    }
-
     const onSubmit = () => {
         console.log(formValues);
         const validate = validateRegister(formValues);
@@ -202,7 +167,12 @@ const RegisterForm = (props: Props) => {
                         getCities(e.target.value)
                     }}
                 >
-                    {renderRegion()}
+                    <option disabled selected value=''>--Chọn quốc gia--</option>
+                    {
+                        locations.map((location: ILocationParams, index: number) => (
+                            <option key={index} value={location.id}>{location.name}</option>
+                        ))
+                    }
                 </select>
 
                 {!!validate?.region && (
@@ -223,7 +193,12 @@ const RegisterForm = (props: Props) => {
                         value={formValues.state}
                         onChange={(e) => setFormValues({...formValues, state: e.target.value})}
                     >
-                        {renderState()}
+                        <option disabled selected value=''>--Chọn thành phố--</option>
+                        {
+                            cities.map((city: ILocationParams, index: number) => (
+                                <option key={index} value={city.id}>{city.name}</option>
+                            ))
+                        }
                     </select>
                     {!!validate?.state && (
                         <small className="text-danger">
@@ -231,25 +206,24 @@ const RegisterForm = (props: Props) => {
                         </small>
                     )}
                 </div>
-            ) : (
-                    <div className='col-md-12'>
-                        <label htmlFor="state" className="form-label">
-                            <FormattedMessage id="state" />
-                        </label>
-                        <select
-                            disabled
-                            className="form-select"
-                            id="state"
-                            value={formValues.state}
-                            onChange={(e) => setFormValues({...formValues, state: e.target.value})}
-                        >
-                        </select>
-                        {!!validate?.state && (
-                            <small className="text-danger">
-                                <FormattedMessage id={validate?.state} />
-                            </small>
-                        )}
-                    </div>
+            ) : (<div className='col-md-12'>
+                    <label htmlFor="state" className="form-label">
+                        <FormattedMessage id="state" />
+                    </label>
+                    <select
+                        disabled
+                        className="form-select"
+                        id="state"
+                        value={formValues.state}
+                        onChange={(e) => setFormValues({...formValues, state: e.target.value})}
+                    >
+                    </select>
+                    {!!validate?.state && (
+                        <small className="text-danger">
+                            <FormattedMessage id={validate?.state} />
+                        </small>
+                    )}
+                </div>
             )}
 
             <div>
