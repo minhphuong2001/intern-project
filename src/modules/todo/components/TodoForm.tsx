@@ -13,9 +13,9 @@ function TodoForm({ todo, title, index, setTitle }: TodoProps) {
     const [isLabel, setIsLabel] = useState(true);
     const hour = moment().format('MMMM Do YYYY, h:mm:ss a');
 
-    const handleOnChange = useCallback((e: any) => {
+    const handleOnChange = (e: any) => {
         setTitle(index, e.target.value);
-    }, [setTitle, index]);
+    };
     
     
     return (
@@ -27,6 +27,7 @@ function TodoForm({ todo, title, index, setTitle }: TodoProps) {
                 {
                     isLabel ? (
                         <label
+                            className='label'
                             onClick={() => setIsLabel(false)}
                         >
                             {title}

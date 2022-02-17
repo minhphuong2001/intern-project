@@ -34,7 +34,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin: 20px auto;
+    margin: 30px auto auto auto;
 }
 
 .todo {
@@ -53,6 +53,12 @@
     }
     .info {
         margin-left: 30px;
+    }
+
+    .label:hover {
+        width: 100%;
+        border: 1px solid #2f5fff;
+        cursor: pointer;
     }
 
     .input {
