@@ -18,6 +18,10 @@
             background-color: rgb(110, 231, 110);
         }
 
+        &:nth-child(3) {
+            background-color: rgb(67, 107, 122);
+        }
+
         &:last-child {
             background-color: chocolate;
         }

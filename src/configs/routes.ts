@@ -5,4 +5,5 @@ export const ROUTES = {
   register: '/register',
   todo: '/todo',
   profile: '/profile',
+  payroll: '/payroll',
 };

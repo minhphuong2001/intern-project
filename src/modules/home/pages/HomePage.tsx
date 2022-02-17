@@ -27,11 +27,16 @@ const HomePage = () => {
     dispatch(replace(ROUTES.profile))
   }
 
+  const handlePayrollPage = () => {
+    dispatch(replace(ROUTES.payroll))
+  }
+
   return (
     <div className='home'>
       <button onClick={handleLogout}>Logout</button>
       <button onClick={handleTodoPage}>Todo Page</button>
       <button onClick={handleUserDetailPage}>Profile Page</button>
+      <button onClick={handlePayrollPage}>Payroll Page</button>
     </div>
   )
 }

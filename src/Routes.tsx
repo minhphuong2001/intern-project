@@ -10,6 +10,7 @@ const LoginPage = lazy(() => import('./modules/auth/pages/LoginPage'));
 const RegisterPage = lazy(() => import('./modules/auth/pages/RegisterPage'));
 const TodoPage = lazy(() => import('./modules/home/pages/TodoPage'));
 const ProfilePage = lazy(() => import('./modules/home/pages/ProfilePage'));
+const PayrollPage = lazy(() => import('./modules/home/pages/PayrollPage'));
 
 export const Routes = () => {
   const location = useLocation();
@@ -22,6 +23,7 @@ export const Routes = () => {
         <ProtectedRoute path={ROUTES.todo} component={TodoPage} />
         <ProtectedRoute path={ROUTES.profile} component={ProfilePage} />
         <ProtectedRoute path={ROUTES.contact} component={ContactPage} />
+        <ProtectedRoute path={ROUTES.payroll} component={PayrollPage} />
         <AuthRoute path={ROUTES.register} component={RegisterPage} />
 
         <AuthRoute path="/" component={LoginPage} />
