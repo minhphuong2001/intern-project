@@ -1,0 +1,25 @@
+.home {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    & button {
+        margin: 0 15px;
+        border: none;
+        padding: 8px 16px;
+        transition: 0.15s ease-in;
+
+        &:hover {
+            opacity: 0.8;
+        }
+
+        &:nth-child(2) {
+            background-color: rgb(110, 231, 110);
+        }
+
+        &:last-child {
+            background-color: chocolate;
+        }
+    }
+}

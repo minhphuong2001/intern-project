@@ -1,27 +1,30 @@
 import React, { lazy, Suspense } from 'react';
-import { Route, Switch, useLocation } from 'react-router-dom';
+import { Switch, useLocation } from 'react-router-dom';
 import { ROUTES } from './configs/routes';
+import AuthRoute from './modules/common/components/AuthRoute';
 import ProtectedRoute from './modules/common/components/ProtectedRoute';
 
 const HomePage = lazy(() => import('./modules/home/pages/HomePage'));
 const ContactPage = lazy(() => import('./modules/home/pages/ContactPage'));
 const LoginPage = lazy(() => import('./modules/auth/pages/LoginPage'));
 const RegisterPage = lazy(() => import('./modules/auth/pages/RegisterPage'));
+const TodoPage = lazy(() => import('./modules/home/pages/TodoPage'));
+const ProfilePage = lazy(() => import('./modules/home/pages/ProfilePage'));
 
-interface Props {}
-
-export const Routes = (props: Props) => {
+export const Routes = () => {
   const location = useLocation();
 
   return (
     <Suspense fallback={<div>Loading.....</div>}>
       <Switch location={location}>
-        <Route path={ROUTES.login} component={LoginPage} />
+        <AuthRoute path={ROUTES.login} component={LoginPage} />
         <ProtectedRoute path={ROUTES.home} component={HomePage} />
-        <Route path={ROUTES.contact} component={ContactPage} />
-        <Route path={ROUTES.register} component={RegisterPage} />
+        <ProtectedRoute path={ROUTES.todo} component={TodoPage} />
+        <ProtectedRoute path={ROUTES.profile} component={ProfilePage} />
+        <ProtectedRoute path={ROUTES.contact} component={ContactPage} />
+        <AuthRoute path={ROUTES.register} component={RegisterPage} />
 
-        <Route path="/" component={LoginPage} />
+        <AuthRoute path="/" component={LoginPage} />
       </Switch>
     </Suspense>
   );

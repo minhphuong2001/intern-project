@@ -19,6 +19,7 @@
     "node-sass": "^6.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-edit-text": "^4.2.0",
     "react-intl": "^5.20.10",
     "react-redux": "^7.2.6",
     "react-router": "^5.2.1",
@@ -59,6 +60,7 @@
   "devDependencies": {
     "@types/js-cookie": "^3.0.1",
     "@types/lodash": "^4.14.173",
+    "@types/react-edit-text": "^4.0.1",
     "@types/react-intl": "^3.0.0",
     "@types/react-redux": "^7.1.18",
     "@types/react-router": "^5.1.16",

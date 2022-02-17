@@ -2078,6 +2078,13 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-edit-text@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@types/react-edit-text/-/react-edit-text-4.0.1.tgz#fd7228d6706c92baa66e057bfeed62fac61b8915"
+  integrity sha512-iZlibPy1+1HbYvXdt4Nq/j3Im4GoMF/ANBvnQ4Jv+kmbTppNmF+J1Snvhf//q2RnFG12Fk58xIZWRNVKSX7ELQ==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react-intl@^3.0.0":
   version "3.0.0"
   resolved "https://registry.npmjs.org/@types/react-intl/-/react-intl-3.0.0.tgz"
@@ -3673,6 +3680,11 @@ class-utils@^0.3.5:
     define-property "^0.2.5"
     isobject "^3.0.0"
     static-extend "^0.1.1"
+
+classnames@^2.2.6:
+  version "2.3.1"
+  resolved "https://registry.yarnpkg.com/classnames/-/classnames-2.3.1.tgz#dfcfa3891e306ec1dad105d0e88f4417b8535e8e"
+  integrity sha512-OlQdbZ7gLfGarSqxesMesDa5uz7KFbID8Kpq/SxIoNGDqY8lSYs0D+hhtBXhcdB3rcbXArFr7vlHheLk1voeNA==
 
 clean-css@^4.2.3:
   version "4.2.3"
@@ -10073,6 +10085,13 @@ react-dom@^17.0.2:
     loose-envify "^1.1.0"
     object-assign "^4.1.1"
     scheduler "^0.20.2"
+
+react-edit-text@^4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/react-edit-text/-/react-edit-text-4.2.0.tgz#e861daa665501f11d435d4007b2e98a3636b00d4"
+  integrity sha512-3onhVkytD1BfFBG71dZnohO7YUTqJnJms7rHmWj+AkWiohoFtQOMHPDSak+zqNOA8DF3GE7YVm6StrL6ws3/sQ==
+  dependencies:
+    classnames "^2.2.6"
 
 react-error-overlay@^6.0.9:
   version "6.0.9"

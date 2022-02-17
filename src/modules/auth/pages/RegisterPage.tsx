@@ -14,9 +14,7 @@ import { ROUTES } from '../../../configs/routes';
 import { getErrorMessageResponse } from '../../../utils';
 import logo from '../../../logo-420-x-108.png';
 
-type Props = {};
-
-export default function RegisterPage(props: Props) {
+export default function RegisterPage() {
   const dispatch = useDispatch<ThunkDispatch<AppState, null, Action<string>>>();
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
