@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useState } from 'react'
 import { ITodo } from '../../../models/todo';
 import moment from 'moment'
 
@@ -16,7 +16,6 @@ function TodoForm({ todo, title, index, setTitle }: TodoProps) {
     const handleOnChange = (e: any) => {
         setTitle(index, e.target.value);
     };
-    
     
     return (
         <div className={`${+todo.id%2 === 0 ? 'todo bgc1' : 'todo bgc2'}`}>

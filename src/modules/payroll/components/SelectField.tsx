@@ -4,14 +4,19 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
+export interface SelectOptions {
+    label: string;
+    value: number | string;
+}
 interface SelectFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
     name: string;
     label: string;
     value: string;
     setValue: (e: any) => void;
+    options: SelectOptions[];
 }
 
-export default function SelectField({ name, value, label, setValue }: SelectFieldProps) {
+export default function SelectField({ name, value, label, setValue, options }: SelectFieldProps) {
 
     const handleChange = (e: any) => {
         setValue(e.target.value)
@@ -29,12 +34,14 @@ export default function SelectField({ name, value, label, setValue }: SelectFiel
                     autoWidth
                     label={label}
                 >
-                <MenuItem value="">
-                    <em>None</em>
-                </MenuItem>
-                    <MenuItem value={10}>Twenty</MenuItem>
-                    <MenuItem value={21}>Twenty one</MenuItem>
-                    <MenuItem value={22}>Twenty one and a half</MenuItem>
+                    <MenuItem value="">
+                        <em>None</em>
+                    </MenuItem>
+                    {options.map(option => {
+                        return (
+                            <MenuItem sx={{minWidth: 150}} key={option.value} value={option.value}>{option.label}</MenuItem>
+                        )
+                    })}
                 </Select>
             </FormControl>
         </div>

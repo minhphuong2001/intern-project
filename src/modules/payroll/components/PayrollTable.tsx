@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -9,41 +9,30 @@ import Paper from '@mui/material/Paper';
 import moment from 'moment';
 import {Button, IconButton, Pagination, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import formatMoney from '../utils/common';
+import { numberFormat } from '../utils/common';
 import { CustomDialog } from './CustomDialog';
 import { LoadingButton } from '@mui/lab';
+import { IPayrollData } from '../../../models/payroll';
 
-interface TableData {
-    status: string;
-    date: string;
-    client: string;
-    currency: string;
-    total: number;
-    invoice: string;
+interface PayrollTableProps {
+    payrolls: IPayrollData[];
 }
 
-function createData(
-    status: string,
-    date: string,
-    client: string,
-    currency: string,
-    total: number,
-    invoice: string
-): TableData {
-  return { status, date, client, currency, total, invoice};
-}
-
-const rows = [
-  createData('pending', moment().format('MMMM Do YYYY'), 'Marry Clans', 'usd', 2300, 'abcadhfhfd'),
-  createData('fullfiled', moment().format('MMMM Do YYYY'), 'Marry Clans', 'usd', 2100, 'abcadhfhfd'),
-  createData('processing', moment().format('MMMM Do YYYY'), 'Marry Clans', 'usd', 2500, 'abcadhfhfd'),
-];    
-          
-export default function PayrollTable() {
+export default function PayrollTable({ payrolls }: PayrollTableProps) {
+    
     const [showAddDialog, setShowAddDialog] = useState(false);
     const [showDeleteItem, setShowDeleteItem] = useState(false);
-    const [data, setData] = useState([...rows]);
+    const [page, setPage] = useState(0);
+    const [totalPage, setTotalPage] = useState(0);
+    const limit = 10;
+    const initialShow = payrolls.slice(0, limit);
+    const [limitData, setLimitData] = useState(initialShow);
 
+    useEffect(() => {
+        const totalPages = Math.ceil(payrolls.length / 10);
+        setTotalPage(totalPages);
+    }, [payrolls]);
+    
     const hanldeCloseDialog = () => {
         setShowAddDialog(false);
     }
@@ -51,10 +40,16 @@ export default function PayrollTable() {
     const hanldeCloseDelete = () => {
         setShowDeleteItem(false);
     }
-
-    const hanldeSortByTotal = () => {
-        const newData = data.sort((a, b) => b.total - a.total);
-        setData(newData);
+    
+    const handleChangePage = (e: any, value: any) => {
+        const start = limit * page;
+        let end = start + limit;
+        if (end >= payrolls.length) {
+            end = payrolls.length;
+        }
+        setPage(value);
+        setLimitData(payrolls.slice(start, end));
+        console.log({start, end});
     }
 
     return (
@@ -66,13 +61,13 @@ export default function PayrollTable() {
                         <TableCell align='left' sx={{ fontWeight: 600 }}>Date</TableCell>
                         <TableCell align='left' sx={{ fontWeight: 600 }}>Client</TableCell>
                         <TableCell align='left' sx={{ fontWeight: 600 }}>Currency</TableCell>
-                        <TableCell align='left' sx={{ fontWeight: 600, cursor: 'pointer' }} onClick={hanldeSortByTotal}>Total</TableCell>
-                        <TableCell align='left' sx={{ fontWeight: 600 }}>Invoice #</TableCell>
-                        <TableCell align='right' sx={{width: '200px', fontWeight: 600 }}>Action</TableCell>
+                        <TableCell align='left' sx={{ fontWeight: 600, cursor: 'pointer' }}>Total</TableCell>
+                        <TableCell align='left' sx={{ fontWeight: 600, width: '100px' }}>Invoice #</TableCell>
+                        <TableCell align='right' sx={{width: '250px', fontWeight: 600 }}>Action</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {data.map((row, index: number) => (
+                    {limitData.slice(0, limit).map((item, index: number) => (
                         <TableRow
                             key={index}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -80,17 +75,18 @@ export default function PayrollTable() {
                             <TableCell
                                 component="th"
                                 scope="row"
-                                sx={{
-                                    color: `${row.status === 'pending' ? '#000' : `${row.status === 'processing' ? '#ff7675' : '#74b9f6'}`}`
-                                }}
+                                // sx={{
+                                //     color: `${item.status === 'pending' ? '#000' : `${item.status === 'processing' ? '#ff7675' : '#74b9f6'}`}`
+                                // }}
                             >
-                                {row.status}
+                                {/* {item.status} */}
+                                {index%2 === 0 ? 'fullfied' : 'pending'}
                             </TableCell>
-                            <TableCell align='left'>{row.date}</TableCell>
-                            <TableCell align='left'>{row.client}</TableCell>
-                            <TableCell align='left' sx={{ textTransform: 'uppercase' }}>{row.currency}</TableCell>
-                            <TableCell align='left'>{formatMoney.format(row.total)}</TableCell>
-                            <TableCell align='left'>{row.invoice}</TableCell>
+                            <TableCell align='left'>{moment(item.time_created).format('Do MMMM YYYY')}</TableCell>
+                            <TableCell align='left'>{index%2 === 0 ? 'deng lun' : 'xiao zhan'}</TableCell>
+                            <TableCell align='left' sx={{ textTransform: 'uppercase' }}>{item.currency}</TableCell>
+                            <TableCell align='left'>{numberFormat(item.fees + item.volume_input_in_input_currency)}</TableCell>
+                            <TableCell align='left' className='three-dots'>{item.payroll_id}</TableCell>
                             <TableCell align='right' sx={{ display: 'flex', alignItems: 'center'}}>
                                 <IconButton color='error' onClick={() => setShowDeleteItem(true)}><i className='bx bx-trash'></i></IconButton>
                                 <Button
@@ -113,7 +109,12 @@ export default function PayrollTable() {
                 padding: '20px 16px'
             }}>
                 <Typography>Show...</Typography>
-                <Pagination count={10} color="primary" />
+                <Pagination
+                    color="primary"
+                    count={totalPage}
+                    page={page}
+                    onChange={(e, value) => handleChangePage(e, value)}
+                />
             </Box>
             {/* show dialog when user wants to update */}
             <CustomDialog
