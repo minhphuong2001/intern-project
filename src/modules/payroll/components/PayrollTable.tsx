@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -16,22 +16,58 @@ import { IPayrollData } from '../../../models/payroll';
 
 interface PayrollTableProps {
     payrolls: IPayrollData[];
+    onDelete: (value: any) => void;
 }
 
-export default function PayrollTable({ payrolls }: PayrollTableProps) {
-    
+const useSortTable = (items: any) => {
+    const [sortConfig, setSortConfig] = useState<any>(null);
+
+    const sortedItem = useMemo(() => {
+        const sortableItems = [...items];
+        if (sortConfig !== null) {
+            sortableItems.sort((a, b) => {
+                if (a[sortConfig?.key] < b[sortConfig?.key]) {
+                    return sortConfig?.direction === 'ascending' ? -1 : 1;
+                }
+                if (a[sortConfig?.key] > b[sortConfig?.key]) {
+                    return sortConfig?.direction === 'ascending' ? 1 : -1;
+                }
+                return 0;
+            })
+        }
+        return sortableItems;
+    }, [items, sortConfig]);
+
+    const requestSort = (key: string) => {
+        let direction = 'ascending';
+        if (sortConfig && sortConfig?.key === key && sortConfig?.direction === 'ascending') {
+            direction = 'descending';
+        }
+        setSortConfig({ key, direction });
+    }
+
+    return { items: sortedItem, requestSort, sortConfig };
+}
+
+export default function PayrollTable({ payrolls, onDelete }: PayrollTableProps) {
     const [showAddDialog, setShowAddDialog] = useState(false);
     const [showDeleteItem, setShowDeleteItem] = useState(false);
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(1);
     const [totalPage, setTotalPage] = useState(0);
     const limit = 10;
-    const initialShow = payrolls.slice(0, limit);
+    const { items, requestSort, sortConfig } = useSortTable(payrolls);
+    const initialShow = items.slice(0 , limit);
     const [limitData, setLimitData] = useState(initialShow);
+    const [item, setItem] = useState<IPayrollData>();
 
     useEffect(() => {
-        const totalPages = Math.ceil(payrolls.length / 10);
+        const totalPages = Math.floor(items.length / 10);
         setTotalPage(totalPages);
-    }, [payrolls]);
+    }, [items]);
+    
+    useEffect(() => {
+        setLimitData(items.slice(page - 1, limit + page));
+    }, [items, page])
     
     const hanldeCloseDialog = () => {
         setShowAddDialog(false);
@@ -44,12 +80,20 @@ export default function PayrollTable({ payrolls }: PayrollTableProps) {
     const handleChangePage = (e: any, value: any) => {
         const start = limit * page;
         let end = start + limit;
-        if (end >= payrolls.length) {
-            end = payrolls.length;
+        if (end >= items.length) {
+            end = items.length;
         }
         setPage(value);
-        setLimitData(payrolls.slice(start, end));
-        console.log({start, end});
+        setLimitData(items.slice(start, end));
+        console.log({ start, end });
+    }
+
+    const getClassName = (name: string) => {
+        if (!sortConfig) {
+            return;
+        } else {
+            return sortConfig?.key === name ? sortConfig?.direction : undefined;
+        }
     }
 
     return (
@@ -58,11 +102,25 @@ export default function PayrollTable({ payrolls }: PayrollTableProps) {
                 <TableHead>
                     <TableRow>
                         <TableCell sx={{ fontWeight: 600 }}>Status</TableCell>
-                        <TableCell align='left' sx={{ fontWeight: 600 }}>Date</TableCell>
-                        <TableCell align='left' sx={{ fontWeight: 600 }}>Client</TableCell>
+                        <TableCell
+                            align='left'
+                            sx={{ fontWeight: 600, cursor: 'pointer' }}
+                            onClick={() => requestSort('time_created')}
+                            className={getClassName('time_created')}
+                        >
+                            Date
+                        </TableCell>
+                        <TableCell align='left' sx={{ fontWeight: 600, width: '200px' }}>Client</TableCell>
                         <TableCell align='left' sx={{ fontWeight: 600 }}>Currency</TableCell>
-                        <TableCell align='left' sx={{ fontWeight: 600, cursor: 'pointer' }}>Total</TableCell>
-                        <TableCell align='left' sx={{ fontWeight: 600, width: '100px' }}>Invoice #</TableCell>
+                        <TableCell
+                            align='left'
+                            sx={{ fontWeight: 600, cursor: 'pointer' }}
+                            onClick={() => requestSort('volume_input_in_input_currency')}
+                            className={getClassName('volume_input_in_input_currency')}
+                        >
+                            Total
+                        </TableCell>
+                        <TableCell align='left' sx={{ fontWeight: 600, width: '150px' }}>Invoice #</TableCell>
                         <TableCell align='right' sx={{width: '250px', fontWeight: 600 }}>Action</TableCell>
                     </TableRow>
                 </TableHead>
@@ -80,15 +138,22 @@ export default function PayrollTable({ payrolls }: PayrollTableProps) {
                                 // }}
                             >
                                 {/* {item.status} */}
-                                {index%2 === 0 ? 'fullfied' : 'pending'}
+                                {index % 2 === 0 ? 'fullfied' : 'pending'}
                             </TableCell>
                             <TableCell align='left'>{moment(item.time_created).format('Do MMMM YYYY')}</TableCell>
                             <TableCell align='left'>{index%2 === 0 ? 'deng lun' : 'xiao zhan'}</TableCell>
                             <TableCell align='left' sx={{ textTransform: 'uppercase' }}>{item.currency}</TableCell>
                             <TableCell align='left'>{numberFormat(item.fees + item.volume_input_in_input_currency)}</TableCell>
-                            <TableCell align='left' className='three-dots'>{item.payroll_id}</TableCell>
+                            <TableCell align='left'>
+                                <span className='three-dots'>{item.subpayroll_ids[0]}</span>
+                            </TableCell>
                             <TableCell align='right' sx={{ display: 'flex', alignItems: 'center'}}>
-                                <IconButton color='error' onClick={() => setShowDeleteItem(true)}><i className='bx bx-trash'></i></IconButton>
+                                <IconButton
+                                    color='error'
+                                    onClick={() => {setShowDeleteItem(true), setItem(item)}}
+                                >
+                                    <i className='bx bx-trash'></i>
+                                </IconButton>
                                 <Button
                                     color='primary'
                                     variant='outlined'
@@ -108,7 +173,7 @@ export default function PayrollTable({ payrolls }: PayrollTableProps) {
                 justifyContent: 'space-between',
                 padding: '20px 16px'
             }}>
-                <Typography>Show...</Typography>
+                <Typography>Show <span style={{ fontWeight: 600 }}>{limit}</span> data from <span style={{ fontWeight: 600 }}>{payrolls.length}</span></Typography>
                 <Pagination
                     color="primary"
                     count={totalPage}
@@ -151,12 +216,15 @@ export default function PayrollTable({ payrolls }: PayrollTableProps) {
                         <Button
                             variant='contained'
                             sx={{ marginRight: '1rem' }}
+                            onClick={() => {onDelete(item?.payroll_id), setShowDeleteItem(false)}}
+                            size='small'
                         >
-                            update
+                            delete
                         </Button>
                         <Button
                             variant='outlined'
                             onClick={hanldeCloseDelete}
+                            size='small'
                         >
                             cancel
                         </Button>

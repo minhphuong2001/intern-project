@@ -18,5 +18,6 @@
   "name": "Họ và tên",
   "gender": "Giới tính",
   "region": "Quốc gia",
-  "state": "Thành phố"
+  "state": "Thành phố",
+  "statusRequire": "Please enter fill the data."
 }

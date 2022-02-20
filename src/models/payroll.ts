@@ -32,3 +32,17 @@ export interface IPayroll {
     payrolls: IPayrollData[];
     to_date: any
 }
+export interface ListParams {
+    status: string;
+    client: string;
+    dateFrom: Date | string | null;
+    dateTo: Date | string| null;
+    invoice: string;
+}
+export interface IFilterPayrollValidation {
+    status: string;
+    client: string;
+    dateFrom: Date | string| null;
+    dateTo: Date | string| null;
+    invoice: string;
+}

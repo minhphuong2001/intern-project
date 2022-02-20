@@ -3,6 +3,7 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import { FormHelperText } from '@mui/material';
 
 export interface SelectOptions {
     label: string;
@@ -14,9 +15,10 @@ interface SelectFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
     value: string;
     setValue: (e: any) => void;
     options: SelectOptions[];
+    error?: string;
 }
 
-export default function SelectField({ name, value, label, setValue, options }: SelectFieldProps) {
+export default function SelectField({ name, value, label, setValue, options, error }: SelectFieldProps) {
 
     const handleChange = (e: any) => {
         setValue(e.target.value)
@@ -33,6 +35,7 @@ export default function SelectField({ name, value, label, setValue, options }: S
                     onChange={handleChange}
                     autoWidth
                     label={label}
+                    error={error ? true : false}
                 >
                     <MenuItem value="">
                         <em>None</em>
@@ -43,6 +46,7 @@ export default function SelectField({ name, value, label, setValue, options }: S
                         )
                     })}
                 </Select>
+                {error && <FormHelperText error sx={{margin: '8px 0'}}>{error}</FormHelperText>}
             </FormControl>
         </div>
     );

@@ -7,7 +7,8 @@ export interface PayrollState {
 
 export const setPayroll = createCustomAction('payrolls/setPayroll', (data: Array<IPayrollData>) => ({
     data
-}))
+}));
+
 
 const actions = { setPayroll };
 type Action = ActionType<typeof actions>;

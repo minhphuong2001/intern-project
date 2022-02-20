@@ -17,11 +17,24 @@
     color: rgb(132, 191, 247);
 }
 .three-dots {
-    display: block; /* Fallback trong trường hợp trình duyệt không hỗ trợ display dạng box */
+    width: 150px;
+    white-space: pre-wrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis; 
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
     display: -webkit-box;
-    -webkit-line-clamp: 1; /* Số dòng bạn muốn giới hạn */
-    visibility: visible; /* Tránh bug không giới hạn số dòng được do trình duyệt */
-    text-overflow: ellipsis;
-    overflow:hidden;
-    max-width: 150px;
 }
+
+.ascending::after {
+    content: '👇';
+    display: inline-block;
+    margin-left: 5px;
+}
+
+.descending::after {
+    content: '☝️';
+    display: inline-block;
+    margin-left: 5px;
+}
+  

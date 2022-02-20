@@ -1,24 +1,31 @@
-import { TextField } from '@mui/material'
+import { TextField, FormControl, FormHelperText } from '@mui/material'
 import React from 'react'
 
 interface InputFieldProps {
     label: string;
     value: string;
     setValue: (e: any) => void;
+    error?: string;
 }
 
-export default function InputField({ label, value, setValue }: InputFieldProps) {
+export default function InputField({ label, value, setValue, error }: InputFieldProps) {
+
+    const handleChangeInput = (e: any) => {
+        setValue(e.target.value);
+    }
     
     return (
-        <div style={{marginTop: '8px'}}>
+        <FormControl sx={{ marginTop: '8px'}}>
             <TextField
                 id="outlined-basic"
                 variant="outlined"
                 size='small'
                 label={label}
                 value={value}
-                onChange={setValue}
+                onChange={handleChangeInput}
+                error={error ? true : false}
             />
-        </div>
+            {error && <FormHelperText error sx={{margin: '8px 0'}}>{error}</FormHelperText>}
+        </FormControl>
     )
 }
