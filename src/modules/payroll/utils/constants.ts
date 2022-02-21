@@ -1,0 +1,1 @@
+export const status = {PENDING: 'Pending', FULLFILED: 'Fullfilled', RECEIVED: 'Received', PROCCESSING: 'Processing'}

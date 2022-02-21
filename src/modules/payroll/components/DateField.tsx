@@ -10,12 +10,13 @@ interface DateFieldProps {
     value: Date | null | string;
     setValue: (e: any) => void;
     error?: string | Date | null;
+    minDate?: Date | null | string;
 }
 
-export default function DateField({ label, value, setValue, error }: DateFieldProps) {
+export default function DateField({ label, value, setValue, error, minDate }: DateFieldProps) {
 
     return (
-        <div style={{ marginTop: '8px', marginLeft: '10px', width: '200px'}}>
+        <div style={{ marginTop: '8px', marginLeft: '10px', width: '250px'}}>
            <LocalizationProvider dateAdapter={AdapterMomentFns}>
                 <DatePicker
                     label={label}
@@ -23,6 +24,7 @@ export default function DateField({ label, value, setValue, error }: DateFieldPr
                     onChange={(newValue) => {
                         setValue(newValue);
                     }}
+                    minDate={minDate}
                     renderInput={(params) => (
                         <FormControl>
                             <TextField

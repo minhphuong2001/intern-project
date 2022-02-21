@@ -26,7 +26,7 @@ export default function SelectField({ name, value, label, setValue, options, err
 
     return (
         <div>
-            <FormControl sx={{ m: 1, minWidth: 150 }} size='small'>
+            <FormControl sx={{ m: 1, minWidth: 250 }} size='small'>
                 <InputLabel>{name}</InputLabel>
                 <Select
                     labelId="demo-simple-select-autowidth-label"
@@ -42,7 +42,7 @@ export default function SelectField({ name, value, label, setValue, options, err
                     </MenuItem>
                     {options.map(option => {
                         return (
-                            <MenuItem sx={{minWidth: 150}} key={option.value} value={option.value}>{option.label}</MenuItem>
+                            <MenuItem sx={{minWidth: 250}} key={option.value} value={option.value}>{option.label}</MenuItem>
                         )
                     })}
                 </Select>

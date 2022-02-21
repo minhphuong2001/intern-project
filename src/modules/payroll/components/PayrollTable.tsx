@@ -7,16 +7,21 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import moment from 'moment';
-import {Button, IconButton, Pagination, Typography } from '@mui/material';
+import {Button, IconButton, Pagination, TextField, Typography } from '@mui/material';
 import { Box } from '@mui/system';
-import { numberFormat } from '../utils/common';
+import { checkStatus, numberFormat } from '../utils/common';
 import { CustomDialog } from './CustomDialog';
 import { LoadingButton } from '@mui/lab';
 import { IPayrollData } from '../../../models/payroll';
 
+export interface UpdateProps {
+    fees?: any;
+    volume_input_in_input_currency?: any;
+}
 interface PayrollTableProps {
     payrolls: IPayrollData[];
     onDelete: (value: any) => void;
+    onUpdate: (index: number, values: UpdateProps) => void;
 }
 
 const useSortTable = (items: any) => {
@@ -49,7 +54,7 @@ const useSortTable = (items: any) => {
     return { items: sortedItem, requestSort, sortConfig };
 }
 
-export default function PayrollTable({ payrolls, onDelete }: PayrollTableProps) {
+export default function PayrollTable({ payrolls, onDelete, onUpdate }: PayrollTableProps) {
     const [showAddDialog, setShowAddDialog] = useState(false);
     const [showDeleteItem, setShowDeleteItem] = useState(false);
     const [page, setPage] = useState(1);
@@ -59,6 +64,9 @@ export default function PayrollTable({ payrolls, onDelete }: PayrollTableProps) 
     const initialShow = items.slice(0 , limit);
     const [limitData, setLimitData] = useState(initialShow);
     const [item, setItem] = useState<IPayrollData>();
+    const [fees, setFees] = useState();
+    const [money, setMoney] = useState();
+    const [activeIndex, setActiveIndex] = useState<Number>();
 
     useEffect(() => {
         const totalPages = Math.floor(items.length / 10);
@@ -95,7 +103,7 @@ export default function PayrollTable({ payrolls, onDelete }: PayrollTableProps) 
             return sortConfig?.key === name ? sortConfig?.direction : undefined;
         }
     }
-
+    
     return (
         <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -110,8 +118,8 @@ export default function PayrollTable({ payrolls, onDelete }: PayrollTableProps) 
                         >
                             Date
                         </TableCell>
-                        <TableCell align='left' sx={{ fontWeight: 600, width: '200px' }}>Client</TableCell>
-                        <TableCell align='left' sx={{ fontWeight: 600 }}>Currency</TableCell>
+                        <TableCell align='left' sx={{ fontWeight: 600, width: '200px' }}>Funding Method</TableCell>
+                        <TableCell align='left' sx={{ fontWeight: 600 }}>Payroll Currency</TableCell>
                         <TableCell
                             align='left'
                             sx={{ fontWeight: 600, cursor: 'pointer' }}
@@ -120,51 +128,69 @@ export default function PayrollTable({ payrolls, onDelete }: PayrollTableProps) 
                         >
                             Total
                         </TableCell>
-                        <TableCell align='left' sx={{ fontWeight: 600, width: '150px' }}>Invoice #</TableCell>
+                        <TableCell align='left' sx={{ fontWeight: 600, width: '150px' }}>Order #</TableCell>
                         <TableCell align='right' sx={{width: '250px', fontWeight: 600 }}>Action</TableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {limitData.slice(0, limit).map((item, index: number) => (
-                        <TableRow
-                            key={index}
-                            sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                        >
-                            <TableCell
-                                component="th"
-                                scope="row"
-                                // sx={{
-                                //     color: `${item.status === 'pending' ? '#000' : `${item.status === 'processing' ? '#ff7675' : '#74b9f6'}`}`
-                                // }}
+                    {limitData.slice(0, limit).map((item: IPayrollData, index: number) => {
+                        let colorStatus = '';
+                        switch (checkStatus({...item})) {
+                            case 'Fulfilled':
+                                colorStatus = '#000'
+                                break;
+                            case 'Processing':
+                                colorStatus = '#8e44ad'
+                                break;
+                            case 'Canceled':
+                                colorStatus = '#c0392b'
+                                break;
+                            case 'Received':
+                                colorStatus = '#2980b9'
+                                break;
+                            default:
+                                colorStatus = '#f1c40f'
+                                break;
+                        }
+
+                        return (
+                            <TableRow
+                                key={index}
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                             >
-                                {/* {item.status} */}
-                                {index % 2 === 0 ? 'fullfied' : 'pending'}
-                            </TableCell>
-                            <TableCell align='left'>{moment(item.time_created).format('Do MMMM YYYY')}</TableCell>
-                            <TableCell align='left'>{index%2 === 0 ? 'deng lun' : 'xiao zhan'}</TableCell>
-                            <TableCell align='left' sx={{ textTransform: 'uppercase' }}>{item.currency}</TableCell>
-                            <TableCell align='left'>{numberFormat(item.fees + item.volume_input_in_input_currency)}</TableCell>
-                            <TableCell align='left'>
-                                <span className='three-dots'>{item.subpayroll_ids[0]}</span>
-                            </TableCell>
-                            <TableCell align='right' sx={{ display: 'flex', alignItems: 'center'}}>
-                                <IconButton
-                                    color='error'
-                                    onClick={() => {setShowDeleteItem(true), setItem(item)}}
+                                <TableCell
+                                    component="th"
+                                    scope="row"
+                                    sx={{ color: colorStatus}}
                                 >
-                                    <i className='bx bx-trash'></i>
-                                </IconButton>
-                                <Button
-                                    color='primary'
-                                    variant='outlined'
-                                    size='small'
-                                    sx={{ borderRadius: '10px', marginRight: '10px' }}
-                                    onClick={() => setShowAddDialog(true)}
-                                >
-                                    View Details</Button>
-                            </TableCell>
-                        </TableRow>
-                    ))}
+                                    {checkStatus({...item})}
+                                </TableCell>
+                                <TableCell align='left'>{moment(item.time_created).format('MM/DD/YYYY')}</TableCell>
+                                <TableCell align='left'>{item.payment_type}</TableCell>
+                                <TableCell align='left' sx={{ textTransform: 'uppercase' }}>{item.currency}</TableCell>
+                                <TableCell align='left' sx={{ fontWeight: 600 }}>{numberFormat(Number(item.fees) + Number(item.volume_input_in_input_currency))}</TableCell>
+                                <TableCell align='left'>
+                                    <span className='three-dots'>{item.payroll_id}</span>
+                                </TableCell>
+                                <TableCell align='right' sx={{ display: 'flex', alignItems: 'center'}}>
+                                    <IconButton
+                                        color='error'
+                                        onClick={() => {setShowDeleteItem(true), setItem(item)}}
+                                    >
+                                        <i className='bx bx-trash'></i>
+                                    </IconButton>
+                                    <Button
+                                        color='primary'
+                                        variant='outlined'
+                                        size='small'
+                                        sx={{ borderRadius: '10px', marginRight: '10px' }}
+                                        onClick={() => {setShowAddDialog(true), setItem(item), setActiveIndex(index)}}
+                                    >
+                                        View Details</Button>
+                                </TableCell>
+                            </TableRow>
+                        )
+                    })}
                 </TableBody>
             </Table>
             <Box sx={{
@@ -186,8 +212,36 @@ export default function PayrollTable({ payrolls, onDelete }: PayrollTableProps) 
                 open={showAddDialog}
                 title='Update Payroll'
                 content={
-                    <Box width='400px'>
-                        <Typography>this is content</Typography>
+                    <Box width='400px' my={1}>
+                        <TextField
+                            name='order'
+                            label='Order #'
+                            size='small'
+                            value={item?.payroll_id}
+                            disabled
+                            fullWidth
+                        />
+                        <Box mt={2} sx={{ display: 'flex', alignItems: 'center'}}>
+                           <TextField
+                                name='fees'
+                                label='Fees'
+                                size='small'
+                                fullWidth
+                                type='number'
+                                sx={{ margin: '0 10px 0 0'}}
+                                value={fees}
+                                onChange={(e: any) => setFees(e.target.value)}
+                            />
+                            <TextField
+                                name='money'
+                                label='Money'
+                                size='small'
+                                type='number'
+                                fullWidth
+                                value={money}
+                                onChange={(e: any) => setMoney(e.target.value)}
+                            /> 
+                        </Box>
                     </Box>
                 }
                 actions={
@@ -195,6 +249,10 @@ export default function PayrollTable({ payrolls, onDelete }: PayrollTableProps) 
                         <LoadingButton
                             variant='contained'
                             sx={{ marginRight: '1rem' }}
+                            onClick={() => {
+                                onUpdate(activeIndex as number, { fees, volume_input_in_input_currency: money });
+                                setShowAddDialog(false)
+                            }}
                         >
                             update
                         </LoadingButton>

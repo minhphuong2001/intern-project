@@ -1,3 +1,19 @@
+import { IPayrollData } from './../../../models/payroll';
+
+export const checkStatus = (values: IPayrollData) => {
+  if (values.received) {
+    return 'Received'
+  }  else if (values.approved || values.matched) {
+    return 'Processing'
+  } else if (values.fulfilled) {
+    return 'Fulfilled'
+  } else if (values.canceled) {
+    return 'Canceled'
+  } else {
+    return 'Pending'
+  }
+}
+
 export const formatMoney = new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'USD',

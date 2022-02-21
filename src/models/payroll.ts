@@ -34,15 +34,21 @@ export interface IPayroll {
 }
 export interface ListParams {
     status: string;
-    client: string;
     dateFrom: Date | string | null;
     dateTo: Date | string| null;
-    invoice: string;
+    order: string;
 }
 export interface IFilterPayrollValidation {
     status: string;
-    client: string;
     dateFrom: Date | string| null;
     dateTo: Date | string| null;
-    invoice: string;
+    order: string;
+}
+
+export interface IStatus {
+    fulfilled: boolean;
+    matched: boolean;
+    received: boolean;
+    canceled: boolean;
+    approved: boolean;
 }

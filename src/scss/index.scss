@@ -27,13 +27,13 @@
 }
 
 .ascending::after {
-    content: '👇';
+    content: '↓';
     display: inline-block;
     margin-left: 5px;
 }
 
 .descending::after {
-    content: '☝️';
+    content: '↑';
     display: inline-block;
     margin-left: 5px;
 }

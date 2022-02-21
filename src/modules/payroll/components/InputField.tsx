@@ -15,7 +15,7 @@ export default function InputField({ label, value, setValue, error }: InputField
     }
     
     return (
-        <FormControl sx={{ marginTop: '8px'}}>
+        <FormControl sx={{ marginTop: '8px', width: '250px'}}>
             <TextField
                 id="outlined-basic"
                 variant="outlined"

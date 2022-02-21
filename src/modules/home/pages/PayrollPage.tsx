@@ -3,7 +3,7 @@ import { Box, Button, Grid, Typography } from '@mui/material';
 import SelectField from '../../payroll/components/SelectField';
 import DateField from '../../payroll/components/DateField';
 import InputField from '../../payroll/components/InputField';
-import PayrollTable from '../../payroll/components/PayrollTable';
+import PayrollTable, { UpdateProps } from '../../payroll/components/PayrollTable';
 import { useDispatch, useSelector } from 'react-redux';
 import { replace } from 'connected-react-router';
 import { ROUTES } from '../../../configs/routes';
@@ -20,29 +20,29 @@ import { ExportToExcel } from '../../payroll/components/ExportToExcel';
 const statusOptions = [
     {
         value: 'pending',
-        label: 'pending'
+        label: 'Pending'
     },
     {
         value: 'fullfied',
-        label: 'fullfied'
-    },
-]
-
-const clientOpitons = [
-    {
-        value: 'denglun',
-        label: 'deng lun'
+        label: 'Fullfied'
     },
     {
-        value: 'xiao zhan',
-        label: 'xiao zhan'
+        value: 'processing',
+        label: 'Processing'
+    },
+    {
+        value: 'canceled',
+        label: 'Canceled'
+    },
+    {
+        value: 'received',
+        label: 'Received'
     },
 ]
 
 export default function PayrollPage() {
     const [status, setStatus] = useState('');
-    const [client, setClient] = useState('');
-    const [invoice, setInvoice] = useState('');
+    const [order, setOrder] = useState('');
     const [dateFrom, setDateFrom] = useState<Date | null>(null);
     const [dateTo, setDateTo] = useState<Date | null>(null);
     const [validate, setValidate] = React.useState<IFilterPayrollValidation>();
@@ -61,8 +61,7 @@ export default function PayrollPage() {
 
     const handleClear = () => {
         setStatus('');
-        setClient('');
-        setInvoice('');
+        setOrder('');
         setDateFrom(null);
         setDateTo(null);
         setPayrollData([...payrolls]);
@@ -71,28 +70,37 @@ export default function PayrollPage() {
     const handleDeleteItem = (id: string) => {
         const newPayroll = payrolls.filter(value => value.payroll_id !== id);
         dispatch(setPayroll(newPayroll));
+        console.log(id);
     }
 
     const handleFilter = (values: ListParams) => {
-        const validate = validateFilterPayroll({ status, client, dateFrom, dateTo, invoice });
+        const validate = validateFilterPayroll({ status, dateFrom, dateTo, order });
         setValidate(validate);
 
         if (!validFilterPayroll(validate)) {
             return;
         } else {
-            const newPayroll = [...payrollData].filter(e => moment(e.time_created).format('Do MMMM YYYY') === values.dateFrom);
-            // console.log(newPayroll);
-            // console.log(values);
+            const newPayroll = [...payrollData].filter(e => moment(e.time_created).format('MM/DD/YYYY') === values.dateFrom);
             setPayrollData(newPayroll);
         }
+    }
+
+    const handleUpdateItem = (index: number, values: UpdateProps) => {
+        
+        const { fees, volume_input_in_input_currency } = values;
+        const updateItem = { ...payrollData[index], fees, volume_input_in_input_currency };
+        const newpayroll = [...payrollData];
+        newpayroll[index] = updateItem;
+        setPayrollData(newpayroll)
+        console.log(index);
     }
 
     useEffect(() => {
         setPayrollData([...payrolls]);
     }, [payrolls])    
 
-    const from = moment(dateFrom).format('Do MMMM YYYY');
-    const to = moment(dateTo).format('Do MMMM YYYY');
+    const from = moment(dateFrom).format('MM/DD/YYYY');
+    const to = moment(dateTo).format('MM/DD/YYYY');
 
     return (
         <Box sx={{
@@ -109,10 +117,9 @@ export default function PayrollPage() {
             }}>
                 <Box my={1} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Typography variant='h5' sx={{ textTransform: 'capitalize', fontWeight: 600 }}>payroll transaction list</Typography>
-                    {/* <Button size='small' variant='contained' endIcon={<i className='bx bx-chevron-down'></i>}>Export CSV</Button> */}
                     <ExportToExcel item={payrollData} fileName={fileName} />
                 </Box>
-                <Grid container spacing={3}>
+                <Grid container spacing={4}>
                     <Grid item md={10} sx={{
                         display: 'flex',
                         alignItems: 'flex-start',
@@ -126,14 +133,6 @@ export default function PayrollPage() {
                             options={statusOptions}
                             error={validate?.status}
                         />
-                        <SelectField
-                            name='Client'
-                            label='Client'
-                            value={client}
-                            setValue={setClient}
-                            options={clientOpitons}
-                            error={validate?.client}
-                        />
                         <DateField
                             label='From'
                             value={dateFrom}
@@ -145,12 +144,13 @@ export default function PayrollPage() {
                             value={dateTo}
                             setValue={setDateTo}
                             error={validate?.dateTo}
+                            minDate={dateFrom}
                         />
                         <InputField
-                            label='Invoice #'
-                            value={invoice}
-                            setValue={setInvoice}
-                            error={validate?.invoice}
+                            label='Order #'
+                            value={order}
+                            setValue={setOrder}
+                            error={validate?.order}
                         />
                     </Grid>
                     <Grid item md={2} mt={1}>
@@ -160,10 +160,9 @@ export default function PayrollPage() {
                             sx={{ marginRight: '10px' }}
                             onClick={() => handleFilter({
                                 status,
-                                client,
                                 dateFrom: from,
                                 dateTo: to,
-                                invoice
+                                order
                             })}
                         >
                             Apply
@@ -172,7 +171,7 @@ export default function PayrollPage() {
                     </Grid>
                 </Grid>
                 <Box mt={2}>
-                    <PayrollTable payrolls={payrollData} onDelete={handleDeleteItem}/>
+                    <PayrollTable payrolls={payrollData} onDelete={handleDeleteItem} onUpdate={handleUpdateItem}/>
                 </Box>
             </Box>
         </Box>
