@@ -32,6 +32,7 @@ const useSortTable = (items: any) => {
         if (sortConfig !== null) {
             sortableItems.sort((a, b) => {
                 if (a[sortConfig?.key] < b[sortConfig?.key]) {
+                    console.log(a[sortConfig?.key])
                     return sortConfig?.direction === 'ascending' ? -1 : 1;
                 }
                 if (a[sortConfig?.key] > b[sortConfig?.key]) {
@@ -64,8 +65,8 @@ export default function PayrollTable({ payrolls, onDelete, onUpdate }: PayrollTa
     const initialShow = items.slice(0 , limit);
     const [limitData, setLimitData] = useState(initialShow);
     const [item, setItem] = useState<IPayrollData>();
-    const [fees, setFees] = useState();
-    const [money, setMoney] = useState();
+    const [fees, setFees] = useState<Number>();
+    const [money, setMoney] = useState<Number>();
     const [activeIndex, setActiveIndex] = useState<Number>();
 
     useEffect(() => {
@@ -77,6 +78,11 @@ export default function PayrollTable({ payrolls, onDelete, onUpdate }: PayrollTa
         setLimitData(items.slice(page - 1, limit + page));
     }, [items, page])
     
+    useEffect(() => {
+        setFees(item?.fees);
+        setMoney(item?.volume_input_in_input_currency);
+    }, [item])
+
     const hanldeCloseDialog = () => {
         setShowAddDialog(false);
     }
@@ -199,7 +205,7 @@ export default function PayrollTable({ payrolls, onDelete, onUpdate }: PayrollTa
                 justifyContent: 'space-between',
                 padding: '20px 16px'
             }}>
-                <Typography>Show <span style={{ fontWeight: 600 }}>{limit}</span> data from <span style={{ fontWeight: 600 }}>{payrolls.length}</span></Typography>
+                <Typography>Show <span style={{ fontWeight: 600 }}>{limitData.length}</span> data from <span style={{ fontWeight: 600 }}>{payrolls.length}</span></Typography>
                 <Pagination
                     color="primary"
                     count={totalPage}

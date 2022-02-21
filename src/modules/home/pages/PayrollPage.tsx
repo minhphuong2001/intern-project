@@ -80,19 +80,20 @@ export default function PayrollPage() {
         if (!validFilterPayroll(validate)) {
             return;
         } else {
-            const newPayroll = [...payrollData].filter(e => moment(e.time_created).format('MM/DD/YYYY') === values.dateFrom);
+            const newPayroll = [...payrollData].filter(e => (
+                moment(e.time_created).format('MM/DD/YYYY') === values.dateFrom ||
+                e.payroll_id === values.order
+            ));
             setPayrollData(newPayroll);
         }
     }
 
     const handleUpdateItem = (index: number, values: UpdateProps) => {
-        
         const { fees, volume_input_in_input_currency } = values;
         const updateItem = { ...payrollData[index], fees, volume_input_in_input_currency };
-        const newpayroll = [...payrollData];
-        newpayroll[index] = updateItem;
-        setPayrollData(newpayroll)
-        console.log(index);
+        const newPayroll = [...payrollData];
+        newPayroll[index] = updateItem;
+        setPayrollData(newPayroll);
     }
 
     useEffect(() => {
