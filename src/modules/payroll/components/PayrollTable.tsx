@@ -32,7 +32,6 @@ const useSortTable = (items: any) => {
         if (sortConfig !== null) {
             sortableItems.sort((a, b) => {
                 if (a[sortConfig?.key] < b[sortConfig?.key]) {
-                    console.log(a[sortConfig?.key])
                     return sortConfig?.direction === 'ascending' ? -1 : 1;
                 }
                 if (a[sortConfig?.key] > b[sortConfig?.key]) {

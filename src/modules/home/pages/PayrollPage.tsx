@@ -80,10 +80,18 @@ export default function PayrollPage() {
         if (!validFilterPayroll(validate)) {
             return;
         } else {
-            const newPayroll = [...payrollData].filter(e => (
-                moment(e.time_created).format('MM/DD/YYYY') === values.dateFrom ||
-                e.payroll_id === values.order
-            ));
+            console.log(values);
+            const newPayroll = [...payrollData].filter(e => {
+                const dateRange = moment(e.time_created).format('MM/DD/YYYY');
+                
+                if (values.dateFrom !== null && values.dateTo !== null) { 
+                    console.log(dateRange);
+                    return  (
+                        dateRange >= values.dateFrom && dateRange <= values.dateTo ||
+                        e.payroll_id === values.order
+                    )
+                }
+            });
             setPayrollData(newPayroll);
         }
     }
@@ -118,7 +126,7 @@ export default function PayrollPage() {
             }}>
                 <Box my={1} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Typography variant='h5' sx={{ textTransform: 'capitalize', fontWeight: 600 }}>payroll transaction list</Typography>
-                    <ExportToExcel item={payrollData} fileName={fileName} />
+                    <ExportToExcel dataApi={payrollData} fileName={fileName} />
                 </Box>
                 <Grid container spacing={4}>
                     <Grid item md={10} sx={{
