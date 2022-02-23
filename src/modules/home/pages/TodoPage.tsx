@@ -10,6 +10,7 @@ import { fetchThunk } from '../../common/redux/thunk';
 import TodoForm from '../../todo/components/TodoForm';
 import { setTodo } from '../../todo/redux/todoReducer';
 import '../../../scss/todo.scss'
+import { Button, CircularProgress } from '@mui/material';
 
 const TodoPage = () => {
   const dispatch = useDispatch<ThunkDispatch<AppState, null, Action<string>>>();
@@ -19,10 +20,8 @@ const TodoPage = () => {
   const [limit, setLimit] = useState(5);
   
   const getTodos = useCallback(async () => {
-    setIsLoading(true);
     const response = await dispatch(fetchThunk('https://jsonplaceholder.typicode.com/photos', 'get'));
 
-    setIsLoading(false);
     dispatch(setTodo(response.slice(0, 500)));
   }, [dispatch]);
 
@@ -69,25 +68,27 @@ const TodoPage = () => {
         <button disabled={JSON.stringify(todos) === JSON.stringify(todoData)} onClick={handleConfirm}>confirm</button>
         <button disabled={JSON.stringify(todos) === JSON.stringify(todoData)} onClick={handleReset}>reset</button>
       </div>
-      {
-        isLoading ?
-          <div style={{ height: '100vh' }} className="d-flex justify-content-center align-items-center">
-            <div className="spinner-border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </div>
-          </div> : <div>
-            {
-              todoData.slice(0,limit).map((todo, index) => {
-                return (
-                  <TodoForm todo={todo} index={index} key={index} title={todo.title} setTitle={handleSetTitle}/>
-                )
-              })
-            }
-          </div>
-      }
-      <button onClick={handleLoadmore} className="loadmore">
-        {isLoading ? '...loading' : 'Load more'}
-      </button>
+      <div>
+        {
+          todoData.slice(0,limit).map((todo, index) => {
+            return (
+              <TodoForm todo={todo} index={index} key={index} title={todo.title} setTitle={handleSetTitle}/>
+            )
+          })
+        }
+      </div>
+      <Button
+        sx={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          margin: '30px auto auto auto'  
+        }}
+        variant='contained'
+        onClick={handleLoadmore}
+      >
+        {isLoading ? <CircularProgress size={20} color='inherit'/> : 'Load more'}
+      </Button>
     </div>
   )
 }

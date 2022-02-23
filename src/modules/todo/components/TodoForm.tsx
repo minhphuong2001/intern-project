@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { ITodo } from '../../../models/todo';
 import moment from 'moment'
+import { Link } from 'react-router-dom';
 
 interface TodoProps {
     todo: ITodo;
@@ -18,10 +19,12 @@ function TodoForm({ todo, title, index, setTitle }: TodoProps) {
     };
     
     return (
-        <div className={`${+todo.id%2 === 0 ? 'todo bgc1' : 'todo bgc2'}`}>
-            <div className="thumbnail">
-                <img src={todo.thumbnailUrl} alt="thumbnail" />
-            </div>
+        <div className={`${+todo.id % 2 === 0 ? 'todo bgc1' : 'todo bgc2'}`}>
+            <Link to={`todo/${todo.id}`}>
+                <div className="thumbnail">
+                    <img src={todo.thumbnailUrl} alt="thumbnail" />
+                </div>
+            </Link>
             <div className="info">
                 {
                     isLabel ? (
