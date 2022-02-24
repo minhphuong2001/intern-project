@@ -9,10 +9,6 @@ interface InputFieldProps {
 }
 
 export default function InputField({ label, value, setValue, error }: InputFieldProps) {
-
-    const handleChangeInput = (e: any) => {
-        setValue(e.target.value);
-    }
     
     return (
         <FormControl sx={{ marginTop: '8px', width: '250px'}}>
@@ -22,7 +18,7 @@ export default function InputField({ label, value, setValue, error }: InputField
                 size='small'
                 label={label}
                 value={value}
-                onChange={handleChangeInput}
+                onChange={(e) => setValue(e.target.value)}
                 error={error ? true : false}
             />
             {error && <FormHelperText error sx={{margin: '8px 0'}}>{error}</FormHelperText>}

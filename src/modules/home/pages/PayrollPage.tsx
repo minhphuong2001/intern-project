@@ -13,38 +13,20 @@ import { Action } from 'typesafe-actions';
 import { LIST_PAYROLL } from '../../payroll/utils/mock_data';
 import { IFilterPayrollValidation, IPayrollData, ListParams } from '../../../models/payroll';
 import { setPayroll } from '../../payroll/redux/payrollReducer';
-import moment from 'moment';
 import { validateFilterPayroll, validFilterPayroll } from '../../payroll/utils/validate';
 import { ExportToExcel } from '../../payroll/components/ExportToExcel';
-
-const statusOptions = [
-    {
-        value: 'pending',
-        label: 'Pending'
-    },
-    {
-        value: 'fullfied',
-        label: 'Fullfied'
-    },
-    {
-        value: 'processing',
-        label: 'Processing'
-    },
-    {
-        value: 'canceled',
-        label: 'Canceled'
-    },
-    {
-        value: 'received',
-        label: 'Received'
-    },
-]
+import { LIST_STATUS } from '../../../utils/constants';
+import { checkStatus } from '../../payroll/utils/common';
+import moment from 'moment';
 
 export default function PayrollPage() {
-    const [status, setStatus] = useState('');
-    const [order, setOrder] = useState('');
-    const [dateFrom, setDateFrom] = useState<Date | null>(null);
-    const [dateTo, setDateTo] = useState<Date | null>(null);
+    const [filterValues, setFilterValues] = useState({
+        status: '',
+        dateFrom: new Date(),
+        dateTo: new Date(new Date().setDate(new Date().getDate() + 1)),
+        order: ''
+    });
+    const statusOption = LIST_STATUS;
     const [validate, setValidate] = React.useState<IFilterPayrollValidation>();
     const dispatch = useDispatch<ThunkDispatch<AppState, null, Action<string>>>();
     const { payrolls } = useSelector((state: AppState) => state.payroll);
@@ -60,10 +42,12 @@ export default function PayrollPage() {
     }, [getPayroll])
 
     const handleClear = () => {
-        setStatus('');
-        setOrder('');
-        setDateFrom(null);
-        setDateTo(null);
+        setFilterValues({
+            status: '',
+            dateFrom: new Date(),
+            dateTo: new Date(new Date().setDate(new Date().getDate() + 1)),
+            order: ''
+        });
         setPayrollData([...payrolls]);
     }
 
@@ -71,29 +55,6 @@ export default function PayrollPage() {
         const newPayroll = payrolls.filter(value => value.payroll_id !== id);
         dispatch(setPayroll(newPayroll));
         console.log(id);
-    }
-
-    const handleFilter = (values: ListParams) => {
-        const validate = validateFilterPayroll({ status, dateFrom, dateTo, order });
-        setValidate(validate);
-
-        if (!validFilterPayroll(validate)) {
-            return;
-        } else {
-            console.log(values);
-            const newPayroll = [...payrollData].filter(e => {
-                const dateRange = moment(e.time_created).format('MM/DD/YYYY');
-                
-                if (values.dateFrom !== null && values.dateTo !== null) { 
-                    console.log(dateRange);
-                    return  (
-                        dateRange >= values.dateFrom && dateRange <= values.dateTo ||
-                        e.payroll_id === values.order
-                    )
-                }
-            });
-            setPayrollData(newPayroll);
-        }
     }
 
     const handleUpdateItem = (index: number, values: UpdateProps) => {
@@ -104,12 +65,51 @@ export default function PayrollPage() {
         setPayrollData(newPayroll);
     }
 
+    const handleFilter = useCallback((values: ListParams) => {
+        const validate = validateFilterPayroll(filterValues);
+        setValidate(validate);
+
+        if (!validFilterPayroll(validate)) {
+            return;
+        } else {
+            const { status, dateFrom, dateTo, order } = values;
+            let newPayroll = [...payrolls];
+            let newPayrollDetail = [...newPayroll];
+            if (status) {
+                newPayrollDetail = newPayrollDetail.filter(item => checkStatus({ ...item }) === status);
+            } else if (order) {
+                newPayrollDetail = newPayrollDetail.filter(item => item.payroll_id.indexOf(order) !== -1);
+            } else {
+                newPayrollDetail = newPayrollDetail.filter(item => (dateFrom <= new Date(item.time_created)) && (dateTo >= new Date(item.time_created)));
+            }
+            newPayroll = newPayrollDetail;
+            console.log(values);
+            console.log(filterValues);
+            console.log(newPayroll);
+
+            setPayrollData([...newPayroll]);
+        }
+    }, [payrolls, filterValues])
+
+    const exportCSVFile = [...payrolls].map((item) => {
+        const status = checkStatus({ ...item });
+        const date = moment(item.time_created).format('DD/MM/YYYY');
+        const fundingMethod = item.payment_type;
+        const total = +(item.fees + item.volume_input_in_input_currency);
+        const order = item.payroll_id;
+
+        return {
+            status,
+            date,
+            fundingMethod,
+            total,
+            order
+        }
+    })
+
     useEffect(() => {
         setPayrollData([...payrolls]);
-    }, [payrolls])    
-
-    const from = moment(dateFrom).format('MM/DD/YYYY');
-    const to = moment(dateTo).format('MM/DD/YYYY');
+    }, [payrolls])
 
     return (
         <Box sx={{
@@ -126,7 +126,7 @@ export default function PayrollPage() {
             }}>
                 <Box my={1} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Typography variant='h5' sx={{ textTransform: 'capitalize', fontWeight: 600 }}>payroll transaction list</Typography>
-                    <ExportToExcel dataApi={payrollData} fileName={fileName} />
+                    <ExportToExcel dataApi={exportCSVFile} fileName={fileName} />
                 </Box>
                 <Grid container spacing={4}>
                     <Grid item md={10} sx={{
@@ -137,28 +137,28 @@ export default function PayrollPage() {
                         <SelectField
                             name='Status'
                             label='Status'
-                            value={status}
-                            setValue={setStatus}
-                            options={statusOptions}
+                            value={filterValues.status}
+                            setValue={(value: string) => setFilterValues({...filterValues, status: value})}
+                            options={statusOption}
                             error={validate?.status}
                         />
                         <DateField
                             label='From'
-                            value={dateFrom}
-                            setValue={setDateFrom}
+                            value={filterValues.dateFrom}
+                            setValue={(date: Date) => setFilterValues({...filterValues, dateFrom: date})}
                             error={validate?.dateFrom}
                         />
                         <DateField
                             label='To'
-                            value={dateTo}
-                            setValue={setDateTo}
+                            value={filterValues.dateTo}
+                            setValue={(date: Date) => setFilterValues({...filterValues, dateTo: date})}
                             error={validate?.dateTo}
-                            minDate={dateFrom}
+                            minDate={filterValues.dateFrom}
                         />
                         <InputField
                             label='Order #'
-                            value={order}
-                            setValue={setOrder}
+                            value={filterValues.order}
+                            setValue={(value: string) => setFilterValues({...filterValues, order: value})}
                             error={validate?.order}
                         />
                     </Grid>
@@ -167,12 +167,7 @@ export default function PayrollPage() {
                             variant='outlined'
                             color='primary'
                             sx={{ marginRight: '10px' }}
-                            onClick={() => handleFilter({
-                                status,
-                                dateFrom: from,
-                                dateTo: to,
-                                order
-                            })}
+                            onClick={() => handleFilter(filterValues)}
                         >
                             Apply
                         </Button>

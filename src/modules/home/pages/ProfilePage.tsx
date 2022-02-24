@@ -18,7 +18,6 @@ import { generateAvatarUpload } from '../../auth/upload';
 import Cookies from 'js-cookie';
 import { ACCESS_TOKEN_KEY } from '../../../utils/constants';
 import { setUserInfo } from '../../auth/redux/authReducer';
-import { error } from 'console';
 
 export default function ProfilePage() {
   const dispatch = useDispatch<ThunkDispatch<AppState, null, Action<string>>>();

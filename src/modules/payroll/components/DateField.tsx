@@ -7,10 +7,10 @@ import { FormControl, FormHelperText } from '@mui/material';
 
 interface DateFieldProps {
     label: string;
-    value: Date | null | string;
+    value: Date | null;
     setValue: (e: any) => void;
     error?: string | Date | null;
-    minDate?: Date | null | string;
+    minDate?: Date;
 }
 
 export default function DateField({ label, value, setValue, error, minDate }: DateFieldProps) {
@@ -21,9 +21,7 @@ export default function DateField({ label, value, setValue, error, minDate }: Da
                 <DatePicker
                     label={label}
                     value={value}
-                    onChange={(newValue) => {
-                        setValue(newValue);
-                    }}
+                    onChange={(newValue) => setValue(newValue)}
                     minDate={minDate}
                     renderInput={(params) => (
                         <FormControl>

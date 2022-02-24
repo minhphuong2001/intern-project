@@ -5,24 +5,16 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import { FormHelperText } from '@mui/material';
 
-export interface SelectOptions {
-    label: string;
-    value: number | string;
-}
 interface SelectFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
     name: string;
     label: string;
     value: string;
-    setValue: (e: any) => void;
-    options: SelectOptions[];
+    setValue: (value: string) => void;
+    options: String[];
     error?: string;
 }
 
 export default function SelectField({ name, value, label, setValue, options, error }: SelectFieldProps) {
-
-    const handleChange = (e: any) => {
-        setValue(e.target.value)
-    }
 
     return (
         <div>
@@ -32,7 +24,7 @@ export default function SelectField({ name, value, label, setValue, options, err
                     labelId="demo-simple-select-autowidth-label"
                     id="demo-simple-select-autowidth"
                     value={value}
-                    onChange={handleChange}
+                    onChange={(e) => setValue(e.target.value)}
                     autoWidth
                     label={label}
                     error={error ? true : false}
@@ -40,9 +32,9 @@ export default function SelectField({ name, value, label, setValue, options, err
                     <MenuItem value="">
                         <em>None</em>
                     </MenuItem>
-                    {options.map(option => {
+                    {options.map((option: any, index: number) => {
                         return (
-                            <MenuItem sx={{minWidth: 250}} key={option.value} value={option.value}>{option.label}</MenuItem>
+                            <MenuItem sx={{minWidth: 250}} key={index} value={option}>{option}</MenuItem>
                         )
                     })}
                 </Select>

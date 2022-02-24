@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -245,7 +245,7 @@ export default function PayrollTable({ payrolls, onDelete, onUpdate }: PayrollTa
                                 fullWidth
                                 value={money}
                                 onChange={(e: any) => setMoney(e.target.value)}
-                            /> 
+                            />
                         </Box>
                     </Box>
                 }
@@ -255,7 +255,10 @@ export default function PayrollTable({ payrolls, onDelete, onUpdate }: PayrollTa
                             variant='contained'
                             sx={{ marginRight: '1rem' }}
                             onClick={() => {
-                                onUpdate(activeIndex as number, { fees, volume_input_in_input_currency: money });
+                                onUpdate(
+                                    activeIndex as number,
+                                    { fees, volume_input_in_input_currency: money }
+                                );
                                 setShowAddDialog(false)
                             }}
                         >

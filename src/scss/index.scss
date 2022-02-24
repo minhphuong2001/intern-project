@@ -24,6 +24,12 @@
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
     display: -webkit-box;
+    transition: 0.15s ease-in;
+
+    &:hover {
+        display: block;
+        overflow: visible;
+    }
 }
 
 .ascending::after {

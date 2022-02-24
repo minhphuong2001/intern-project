@@ -4,13 +4,13 @@ export interface IPayrollData {
     company_id: string;
     confirmed: boolean;
     currency: string;
-    date_canceled: null;
-    date_confirmed: string;
-    date_fulfilled: null;
-    date_matched: string;
-    date_processed: string;
-    date_received: string;
-    date_released: null;
+    date_canceled: string | null;
+    date_confirmed: string | null;
+    date_fulfilled: string | null;
+    date_matched: string | null;
+    date_processed: string | null;
+    date_received: string | null;
+    date_released: string | null;
     fees: number;
     fulfilled: boolean;
     is_premium: boolean;
@@ -34,14 +34,14 @@ export interface IPayroll {
 }
 export interface ListParams {
     status: string;
-    dateFrom: Date | string | null;
-    dateTo: Date | string| null;
+    dateFrom: Date;
+    dateTo: Date;
     order: string;
 }
 export interface IFilterPayrollValidation {
     status: string;
-    dateFrom: Date | string| null;
-    dateTo: Date | string| null;
+    dateFrom: string;
+    dateTo: string;
     order: string;
 }
 
